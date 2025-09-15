@@ -25,6 +25,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+import static notificaja.com.utils.DateUtils.getLocalDateSp;
+
 @ApplicationScoped
 public class MkAuthService implements CustomerDataProvider {
 
@@ -56,6 +58,7 @@ public class MkAuthService implements CustomerDataProvider {
             titles = findOpenTitles(date);
         }
         List<ClientDTO> clientDTOS = enrichCustomerData(titles);
+        System.out.printf("Foram encontrados %d titulos para a data: %s%n", titles.size(), date);
         return clientDTOS.stream().map(clientDTO -> mkAuthMapper.toClient(clientDTO)).toList();
     }
 
@@ -63,7 +66,6 @@ public class MkAuthService implements CustomerDataProvider {
         if (token == null || expiredToken()) {
             token = mkAuthClient.getToken(getAuthorizationHeader());
         }
-        System.out.println(token);
         return token;
     }
 
@@ -130,10 +132,7 @@ public class MkAuthService implements CustomerDataProvider {
         return clients;
     }
 
-    private static LocalDate getLocalDateSp() {
-        ZoneId spZone = ZoneId.of("America/Sao_Paulo");
-        return LocalDate.now(spZone);
-    }
+
 
     private static String buildParams(int page, TitleStatus status, LocalDate dueDate) {
         StringBuilder stringBuilder = new StringBuilder();
