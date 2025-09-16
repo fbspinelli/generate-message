@@ -4,16 +4,13 @@ import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import notificaja.com.adapters.dynamoDb.MessageRepository;
-import notificaja.com.adapters.dynamoDb.TemplateRepository;
 import notificaja.com.adapters.dynamoDb.dto.Message;
-import notificaja.com.adapters.dynamoDb.dto.MessageTemplate;
+import notificaja.com.adapters.dynamoDb.dto.Template;
 import notificaja.com.entities.Client;
 
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,7 +40,7 @@ public class MessagesUseCases {
                 Thread.sleep(500); // pequeno delay para garantir que Quarkus terminou de inicializar
 
                 LocalDate today = getLocalDateSp();
-                List<MessageTemplate> templates = templateRepository.findByClientId("d7151c57-6256-48ee-9f70-50227d9e4489");
+                List<Template> templates = templateRepository.findByClientId("d7151c57-6256-48ee-9f70-50227d9e4489");
                 templates.forEach(template -> {
                     LocalDate dueDate = today.plusDays(template.getDaysOffset());
                     System.out.println("Pesquisando titulos com data de vencimento: " + dueDate.toString());
@@ -53,7 +50,7 @@ public class MessagesUseCases {
                         Message message = new Message(UUID.randomUUID().toString(), template.getClientId(),
                                 client.getPhoneNumber(), LocalDateTime.now().toString(), "null", template.getId(), textMessage);
                         System.out.println("Messagem gerada: " + message);
-                        messageRepository.put(message);
+                        //messageRepository.put(message);
                     });
                 });
             } catch (Exception e) {

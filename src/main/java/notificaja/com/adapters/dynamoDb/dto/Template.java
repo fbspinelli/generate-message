@@ -10,7 +10,7 @@ import java.util.List;
 
 @DynamoDbBean
 @ToString
-public class MessageTemplate {
+public class Template {
     private String id;
     private String clientId;
     private List<String> days;
@@ -20,7 +20,7 @@ public class MessageTemplate {
     private String provider;
     private String type;
 
-    public MessageTemplate() {
+    public Template() {
     }
 
     @DynamoDbPartitionKey

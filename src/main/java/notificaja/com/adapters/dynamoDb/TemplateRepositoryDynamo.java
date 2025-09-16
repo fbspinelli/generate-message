@@ -2,7 +2,8 @@ package notificaja.com.adapters.dynamoDb;
 
 
 import jakarta.enterprise.context.ApplicationScoped;
-import notificaja.com.adapters.dynamoDb.dto.MessageTemplate;
+import notificaja.com.adapters.dynamoDb.dto.Template;
+import notificaja.com.useCases.TemplateRepository;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -15,42 +16,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
-public class TemplateRepository {
+public class TemplateRepositoryDynamo implements TemplateRepository {
 
-    private static final TableSchema<MessageTemplate> MESSAGE_TEMPLATE_SCHEMA =
-            TableSchema.fromBean(MessageTemplate.class);
+    private static final TableSchema<Template> MESSAGE_TEMPLATE_SCHEMA =
+            TableSchema.fromBean(Template.class);
 
-    private final  DynamoDbTable<MessageTemplate> templateTable;
+    private final  DynamoDbTable<Template> templateTable;
 
 
-    public TemplateRepository() {
+    public TemplateRepositoryDynamo() {
         DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.create();
         this.templateTable = enhancedClient.table("template", MESSAGE_TEMPLATE_SCHEMA);
     }
 
-    public MessageTemplate findById(String id) {
-        MessageTemplate messageTemplate = templateTable.getItem(Key.builder().partitionValue(id).build());
-        System.out.println(messageTemplate.toString());
-        return messageTemplate;
+    public Template findById(String id) {
+        Template template = templateTable.getItem(Key.builder().partitionValue(id).build());
+        System.out.println(template.toString());
+        return template;
     }
 
-    public List<MessageTemplate> findAll() {
-        List<MessageTemplate> results = new ArrayList<>();
+    public List<Template> findAll() {
+        List<Template> results = new ArrayList<>();
         templateTable.scan().items().forEach(results::add);
         return results;
     }
 
-    public List<MessageTemplate> findByClientId(String clientId) {
-        List<MessageTemplate> results = new ArrayList<>();
+    public List<Template> findByClientId(String clientId) {
+        List<Template> results = new ArrayList<>();
 
-        SdkIterable<Page<MessageTemplate>> pages =
+        SdkIterable<Page<Template>> pages =
                 templateTable
                         .index("clientId-displayOrder-index")
                         .query(r -> r.queryConditional(
                                 QueryConditional.keyEqualTo(k -> k.partitionValue(clientId))
                         ));
 
-        for (Page<MessageTemplate> page : pages) {
+        for (Page<Template> page : pages) {
             results.addAll(page.items());
         }
 
