@@ -40,17 +40,18 @@ public class MessagesUseCases {
                 Thread.sleep(500); // pequeno delay para garantir que Quarkus terminou de inicializar
 
                 LocalDate today = getLocalDateSp();
+                System.out.println("Today: " + today);
                 List<Template> templates = templateRepository.findByClientId("d7151c57-6256-48ee-9f70-50227d9e4489");
                 templates.forEach(template -> {
                     LocalDate dueDate = today.plusDays(template.getDaysOffset());
-                    System.out.println("Pesquisando titulos com data de vencimento: " + dueDate.toString());
+                    System.out.println("Pesquisando titulos com data de vencimento: " + dueDate);
                     List<Client> clients = customerDataProvider.findClientsByDueDate(dueDate);
                     clients.forEach(client -> {
                         String textMessage = replacePlaceholders(template.getMessage(), client);
                         Message message = new Message(UUID.randomUUID().toString(), template.getClientId(),
                                 client.getPhoneNumber(), LocalDateTime.now().toString(), "null", template.getId(), textMessage);
                         System.out.println("Messagem gerada: " + message);
-                        //messageRepository.put(message);
+                        messageRepository.put(message);
                     });
                 });
             } catch (Exception e) {
