@@ -29,6 +29,8 @@ public class MessagesUseCases {
     @Inject
     private MessageRepository messageRepository;
 
+    @Inject ProcessMessage processMessage;
+
     void onStart(@Observes StartupEvent ev) {
 //        // lembrar de verificar na sexta e sabado se tem restrição de envio para sab e dom, se tiver adiantar exemplo
 //        // dia 10
@@ -54,6 +56,7 @@ public class MessagesUseCases {
                         messageRepository.put(message);
                     });
                 });
+                processMessage.runProcessMessage("d7151c57-6256-48ee-9f70-50227d9e4489");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -65,7 +68,7 @@ public class MessagesUseCases {
     private String replacePlaceholders(String text, Client client) {
         text = text.replace("{{Nome}}", client.getName());
         text = text.replace("{{datavenc}}", client.getDueDate());
-        text = text.replace("{{valor}}", client.getInvoiceAmount().toString());
+        text = text.replace("{{valor}}", client.getInvoiceAmount());
         return text;
     }
 }
