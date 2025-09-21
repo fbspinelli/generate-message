@@ -9,7 +9,7 @@ public class LoggingFilter implements ClientRequestFilter {
 
     @Override
     public void filter(ClientRequestContext requestContext) {
-        System.out.println("URL final: " + requestContext.getUri().toString());
-        System.out.println("Method: " + requestContext.getMethod());
+        //System.out.println("URL final: " + requestContext.getUri().toString());
+        //System.out.println("Method: " + requestContext.getMethod());
     }
 }
