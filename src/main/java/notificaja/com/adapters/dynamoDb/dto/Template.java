@@ -6,6 +6,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondarySortKey;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @DynamoDbBean
@@ -21,6 +22,17 @@ public class Template {
     private String type;
 
     public Template() {
+    }
+
+    public Template(Template template) {
+        this.id = template.getId();
+        this.clientId = template.getClientId();
+        this.days = template.getDays();
+        this.daysOffset = template.getDaysOffset();
+        this.displayOrder = template.getDisplayOrder();
+        this.message = template.getMessage();
+        this.provider = template.getProvider();
+        this.type = template.getType();
     }
 
     @DynamoDbPartitionKey
@@ -42,7 +54,7 @@ public class Template {
     }
 
     public List<String> getDays() {
-        return days;
+        return days == null ? null : new ArrayList<>(days);
     }
 
     public void setDays(List<String> days) {

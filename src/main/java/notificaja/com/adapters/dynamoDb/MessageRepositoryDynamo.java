@@ -23,7 +23,6 @@ public class MessageRepositoryDynamo implements MessageRepository {
     }
 
     public void put(Message message) {
-        log.info("Save message");
         messageTable.putItem(message);
     }
 }
