@@ -47,6 +47,7 @@ public class MessagesUseCases {
                 List<Template> templates = templateRepository.findByClientId("d7151c57-6256-48ee-9f70-50227d9e4489");
 
                 templates = anticipateWeekendTemplates(templates);
+                templates = filterByCurrentDay(templates);
 
                 templates.forEach(template -> {
                     LocalDate dueDate = today.plusDays(template.getDaysOffset());
@@ -57,7 +58,7 @@ public class MessagesUseCases {
                                 client.getPhoneNumber(), LocalDateTime.now().toString(), "null", template.getId(),
                                 textMessage);
                         System.out.println("Messagem gerada: " + message);
-                        messageRepository.put(message);
+                        //messageRepository.put(message);
                     });
                 });
                 System.out.println("Finalizado.");
@@ -71,15 +72,24 @@ public class MessagesUseCases {
         t.start();
     }
 
+    private List<Template> filterByCurrentDay(List<Template> templates) {
+        log.info("Filter template with length of: {}", templates.size());
+        return templates.stream().filter(template -> {
+            List<String> days = template.getDays();
+            DayOfWeek todayDayOfWeek = getLocalDateSp().getDayOfWeek();
+            String dayOfWeek = todayDayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+            return days.contains(dayOfWeek);
+        }).toList();
+    }
+
     private List<Template> anticipateWeekendTemplates(List<Template> templates) {
         DayOfWeek todayDayOfWeek = getLocalDateSp().getDayOfWeek();
         log.info("Today: {}", todayDayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
-        List<Template> templatesWithAnticipations = new ArrayList<>();
+        List<Template> templatesWithAnticipations = new ArrayList<>(templates);
 
         if (DayOfWeek.FRIDAY == todayDayOfWeek) {
             log.info("Anticipating templates of friday");
             for (Template template : templates) {
-                templatesWithAnticipations.add(template);
                 List<String> days = template.getDays();
 
                 if (!days.contains("Saturday") && !days.contains("Sunday")) {
@@ -91,7 +101,6 @@ public class MessagesUseCases {
         else if (DayOfWeek.SATURDAY == todayDayOfWeek) {
             log.info("Anticipating templates of saturday");
             for (Template template : templates) {
-                templatesWithAnticipations.add(template);
                 List<String> days = template.getDays();
 
                 if (days.contains("Saturday") && !days.contains("Sunday")) {
