@@ -58,7 +58,7 @@ public class MessagesUseCases {
                                 client.getPhoneNumber(), LocalDateTime.now().toString(), "null", template.getId(),
                                 textMessage);
                         System.out.println("Messagem gerada: " + message);
-                        //messageRepository.put(message);
+                        messageRepository.put(message);
                     });
                 });
                 System.out.println("Finalizado.");
@@ -73,12 +73,18 @@ public class MessagesUseCases {
     }
 
     private List<Template> filterByCurrentDay(List<Template> templates) {
-        log.info("Filter template with length of: {}", templates.size());
+        log.info("Filter templates with length of: {}", templates.size());
         return templates.stream().filter(template -> {
             List<String> days = template.getDays();
             DayOfWeek todayDayOfWeek = getLocalDateSp().getDayOfWeek();
             String dayOfWeek = todayDayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-            return days.contains(dayOfWeek);
+            if (days.contains(dayOfWeek)) {
+                log.info("The template '{}' remains", template.getType());
+                return true;
+            } else {
+                log.info("The template '{}' has been removed", template.getType());
+                return false;
+            }
         }).toList();
     }
 
@@ -88,7 +94,7 @@ public class MessagesUseCases {
         List<Template> templatesWithAnticipations = new ArrayList<>(templates);
 
         if (DayOfWeek.FRIDAY == todayDayOfWeek) {
-            log.info("Anticipating templates of friday");
+            log.info("Looking for models to anticipate the weekend.");
             for (Template template : templates) {
                 List<String> days = template.getDays();
 
