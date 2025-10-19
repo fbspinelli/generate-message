@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import notificaja.com.adapters.mkauth.dto.ClientDTO;
 import notificaja.com.adapters.mkauth.dto.ClientsResponse;
 import notificaja.com.adapters.mkauth.dto.TitleDTO;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 import static notificaja.com.utils.DateUtils.getLocalDateSp;
 
+@Slf4j
 @ApplicationScoped
 public class MkAuthService implements CustomerDataProvider {
 
@@ -49,6 +51,7 @@ public class MkAuthService implements CustomerDataProvider {
 
     @Override
     public List<Client> findClientsByDueDate(LocalDate date) {
+        log.info("Iniciando busca de titulos para data: {}", date);
         List<TitleDTO> titles;
         if(date.isBefore(getLocalDateSp())) {
             titles = findExpiredTitles(date);
@@ -58,7 +61,7 @@ public class MkAuthService implements CustomerDataProvider {
             titles = findOpenTitles(date);
         }
         List<ClientDTO> clientDTOS = enrichCustomerData(titles);
-        System.out.printf("Foram encontrados %d titulos para a data: %s%n", titles.size(), date);
+        log.info("Foram encontrados {} titulos para a data: {}", titles.size(), date);
         return clientDTOS.stream().map(clientDTO -> mkAuthMapper.toClient(clientDTO)).toList();
     }
 

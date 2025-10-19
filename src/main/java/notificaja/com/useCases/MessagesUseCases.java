@@ -57,7 +57,6 @@ public class MessagesUseCases {
                         Message message = new Message(UUID.randomUUID().toString(), template.getClientId(),
                                 client.getPhoneNumber(), LocalDateTime.now().toString(), "null", template.getId(),
                                 textMessage);
-                        System.out.println("Messagem gerada: " + message);
                         messageRepository.put(message);
                     });
                 });
